@@ -27,10 +27,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'copilot_token is required' }, { status: 400 })
   }
 
-  const apiBase = (typeof copilot_base_url === 'string' && copilot_base_url)
-    ? copilot_base_url.replace(/\/$/, '')
-    : DEFAULT_COPILOT_API_URL
+  let apiBase = DEFAULT_COPILOT_API_URL
 
+  if (typeof copilot_base_url === 'string' && copilot_base_url.trim() !== '') {
+    const candidate = copilot_base_url.replace(/\/$/, '')
+    let parsed: URL
+    try {
+      parsed = new URL(candidate)
+    } catch {
+      return NextResponse.json({ error: 'Invalid copilot_base_url' }, { status: 400 })
+    }
+
+    const hostname = parsed.hostname.toLowerCase()
+    const isAllowedHost =
+      hostname === 'api.githubcopilot.com' ||
+      hostname === 'api.individual.githubcopilot.com' ||
+      hostname.endsWith('.githubcopilot.com')
+
+    if (parsed.protocol !== 'https:' || !isAllowedHost) {
+      return NextResponse.json(
+        { error: 'copilot_base_url must be an HTTPS GitHub Copilot domain' },
+        { status: 400 },
+      )
+    }
+
+    apiBase = candidate
+  }
   const url = `${apiBase}/chat/completions`
 
   let upstream: Response

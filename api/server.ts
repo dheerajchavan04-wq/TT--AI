@@ -210,10 +210,10 @@ app.get('/v1/tier', apiKeyAuth, (req, res) => {
 })
 
 // ── Auth routes (no API key required — OAuth entry points) ──────────
-app.use('/v1/auth', authRoutes)
+app.use('/v1/auth', rateLimit, authRoutes)
 
 // ── Copilot proxy (no API key required — user supplies their own Copilot token)
-app.use('/v1/copilot', copilotRoutes)
+app.use('/v1/copilot', rateLimit, copilotRoutes)
 
 // ── Core routes (all tiers) ───────────────────────────────────────────
 app.use('/v1/ultraplinian', apiKeyAuth, rateLimit, ultraplinianRoutes)

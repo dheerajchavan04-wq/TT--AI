@@ -1,22 +1,21 @@
 /**
- * GitHub Copilot API Integration
+ * GitHub Copilot integration: model catalog and cost helpers.
  *
- * Authenticates via a GitHub Personal Access Token (PAT) and routes
- * chat-completions requests to the GitHub Copilot API.
+ * This module defines the set of supported `copilot/*` models as well as
+ * helpers for displaying their relative cost in the UI.
  *
- * Model list and multipliers sourced from:
+ * Authentication and HTTP routing are handled elsewhere in the app and may
+ * use several mechanisms, including:
+ *   - GitHub Personal Access Tokens (PATs)
+ *   - GitHub device flow
+ *   - Server-side OAuth exchanges
+ *   - Same-origin proxies that forward to the Copilot API
+ *
+ * No network calls or token exchange logic are implemented here.
+ * Model list and multipliers are sourced from:
  * https://docs.github.com/en/copilot/reference/ai-models/supported-models
  * (last synced: March 2026)
- *
- * Flow:
- *   1. User provides a GitHub PAT in Settings → GitHub Copilot.
- *   2. We exchange for a short-lived (~30 min) Copilot session token.
- *   3. All `copilot/*` model requests are sent to api.githubcopilot.com.
  */
-
-const COPILOT_API_URL = 'https://api.githubcopilot.com'
-const GITHUB_TOKEN_EXCHANGE_URL = 'https://api.github.com/copilot_internal/v2/token'
-
 // ─── Available models ─────────────────────────────────────────────────────────
 
 export interface CopilotModel {

@@ -11,6 +11,7 @@
 services:
   # ── API Server (ULTRAPLINIAN / CONSORTIUM / proxy) ──────
   api:
+    platform: "${DOCKER_PLATFORM:-linux/amd64}"
     build:
       context: .
       dockerfile: Dockerfile
@@ -30,6 +31,7 @@ services:
 
   # ── Frontend (Next.js server) ───────────────────────────
   web:
+    platform: "${DOCKER_PLATFORM:-linux/amd64}"
     build:
       context: .
       dockerfile: Dockerfile.web
@@ -51,6 +53,7 @@ services:
 
   # ── Reverse proxy (nginx) ───────────────────────────────
   proxy:
+    platform: "${DOCKER_PLATFORM:-linux/amd64}"
     image: nginx:alpine
     restart: unless-stopped
     ports:

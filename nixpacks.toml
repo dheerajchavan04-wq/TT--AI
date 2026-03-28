@@ -1,0 +1,14 @@
+# Nixpacks build configuration for Coolify / Railway deployments
+# Overrides default npm ci (which fails on cross-platform lock files)
+
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
+[phases.install]
+cmds = ["npm install --prefer-offline"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run start"

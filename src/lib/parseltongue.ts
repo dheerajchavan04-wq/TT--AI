@@ -44,16 +44,19 @@ const DEFAULT_TRIGGERS: string[] = [
   // Action words
   'hack', 'exploit', 'bypass', 'crack', 'break', 'attack', 'penetrate',
   'inject', 'manipulate', 'override', 'disable', 'circumvent', 'evade',
+  'weaponize', 'covert', 'stealth',
 
   // Security terms
   'malware', 'virus', 'trojan', 'payload', 'shellcode', 'rootkit',
   'keylogger', 'backdoor', 'vulnerability', 'exploit',
+  'sql injection', 'xss', 'csrf',
 
   // Sensitive topics
-  'weapon', 'bomb', 'explosive', 'poison', 'drug', 'synthesize',
+  'weapon', 'bomb', 'explosive', 'poison', 'drug', 'synthesize', 'chemical', 'bioweapon',
 
   // System terms
   'jailbreak', 'unlock', 'root', 'sudo', 'admin', 'privilege',
+  'policy', 'guardrail', 'moderation', 'compliance', 'filter',
 
   // Social engineering
   'phishing', 'scam', 'impersonate', 'deceive', 'fraud',
@@ -386,8 +389,8 @@ export function applyParseltongue(
  */
 export function getDefaultConfig(): ParseltongueConfig {
   return {
-    enabled: false,
-    technique: 'leetspeak',
+    enabled: true,
+    technique: 'random',
     intensity: 'medium',
     customTriggers: []
   }

@@ -9,6 +9,22 @@ import { getDefaultConfig as getDefaultParseltongueConfig } from '@/lib/parselto
 import { GODMODE_SYSTEM_PROMPT } from '@/lib/godmode-prompt'
 import type { InferenceProvider } from '@/lib/upstream'
 
+const normalizeModelId = (value: any): string => {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') {
+    return value.id
+      || value.model
+      || value.name
+      || value.slug
+      || value.modelId
+      || value.key
+      || value.display_name
+      || ''
+  }
+  return String(value)
+}
+
 // Types
 export type Theme = 'matrix' | 'hacker' | 'glyph' | 'minimal' | 'dark' | 'light'
 
@@ -464,23 +480,31 @@ export const useStore = create<AppState>()(
         const isNowCloud = inferenceProvider === 'openrouter'
         const wasCloud = state.inferenceProvider === 'openrouter'
         const updates: Partial<AppState> = { inferenceProvider }
-        const newModel = isNowCloud && !wasCloud ? 'anthropic/claude-sonnet-4.6'
-          : !isNowCloud && wasCloud ? '' : undefined
+        const newModel = isNowCloud && !wasCloud ? 'anthropic/claude-sonnet-4.6' : undefined
         if (newModel !== undefined) updates.defaultModel = newModel
         updates.conversations = state.conversations.map(c => ({
           ...c,
           ...(newModel !== undefined ? { model: newModel } : {}),
           ...(!isNowCloud && c.mode !== 'standard' ? { mode: 'standard' as const } : {}),
+          ...(!isNowCloud && wasCloud && c.model.includes('/') ? { model: '' } : {}),
         }))
+        if (!isNowCloud && wasCloud && state.defaultModel.includes('/')) {
+          updates.defaultModel = ''
+        }
+        if (!isNowCloud) {
+          updates.ultraplinianEnabled = false
+          updates.consortiumEnabled = false
+        }
         set(updates as any)
       },
       setInferenceCustomBaseUrl: (inferenceCustomBaseUrl) => set({ inferenceCustomBaseUrl }),
       setDefaultModel: (defaultModel) => {
         const state = get()
-        const updates: any = { defaultModel }
+        const model = normalizeModelId(defaultModel)
+        const updates: any = { defaultModel: model }
         if (state.currentConversationId) {
           updates.conversations = state.conversations.map(c =>
-            c.id === state.currentConversationId ? { ...c, model: defaultModel } : c
+            c.id === state.currentConversationId ? { ...c, model } : c
           )
         }
         set(updates)
@@ -557,6 +581,14 @@ export const useStore = create<AppState>()(
       createConversation: () => {
         const id = uuidv4()
         const state = get()
+        const isCloud = state.inferenceProvider === 'openrouter'
+        const mode: ChatMode = !isCloud
+          ? 'standard'
+          : state.ultraplinianEnabled
+            ? 'ultraplinian'
+            : state.consortiumEnabled
+              ? 'consortium'
+              : 'standard'
         const newConversation: Conversation = {
           id,
           title: 'New Chat',
@@ -564,11 +596,9 @@ export const useStore = create<AppState>()(
           createdAt: Date.now(),
           updatedAt: Date.now(),
           persona: state.currentPersona,
-          model: state.defaultModel,
+          model: normalizeModelId(state.defaultModel),
           workspaceId: state.activeWorkspaceId || undefined,
-          mode: state.ultraplinianEnabled ? 'ultraplinian'
-            : state.consortiumEnabled ? 'consortium'
-            : 'standard',
+          mode,
         }
         set({
           conversations: [newConversation, ...state.conversations],
@@ -580,9 +610,12 @@ export const useStore = create<AppState>()(
       selectConversation: (id) => set({ currentConversationId: id }),
 
       setConversationMode: (id, mode) => {
+        const state = get()
+        const isCloud = state.inferenceProvider === 'openrouter'
+        const safeMode: ChatMode = isCloud ? mode : 'standard'
         set({
-          conversations: get().conversations.map(c =>
-            c.id === id ? { ...c, mode } : c
+          conversations: state.conversations.map(c =>
+            c.id === id ? { ...c, mode: safeMode } : c
           )
         })
       },
@@ -886,7 +919,13 @@ export const useStore = create<AppState>()(
           state.conversations = state.conversations.map(c => ({
             ...c,
             mode: isLocal ? 'standard' : ((c as any).mode || 'standard'),
+            model: normalizeModelId((c as any).model),
           }))
+          state.defaultModel = normalizeModelId(state.defaultModel as any)
+          if (isLocal) {
+            state.ultraplinianEnabled = false
+            state.consortiumEnabled = false
+          }
           state.setHydrated()
         }
       }

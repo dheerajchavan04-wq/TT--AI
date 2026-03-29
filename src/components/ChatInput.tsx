@@ -128,6 +128,7 @@ export function ChatInput() {
 
   const proxyMode = !apiKey && !!ultraplinianApiUrl && !!ultraplinianApiKey
   const inferenceV1 = resolveInferenceBaseUrl(inferenceProvider, inferenceCustomBaseUrl)
+  const isLocalProvider = inferenceProvider !== 'openrouter'
   const canUseDirect =
     upstreamRequiresApiKey(inferenceV1)
       ? !!apiKey.trim()
@@ -149,6 +150,15 @@ export function ChatInput() {
 
     const persona = personas.find(p => p.id === currentConversation?.persona) || personas[0]
     const model = currentConversation?.model || 'anthropic/claude-3-opus'
+    if (isLocalProvider && (!model.trim() || model.includes('/'))) {
+      setIsStreaming(false)
+      addMessage(currentConversationId, {
+        role: 'assistant',
+        content: '',
+        err: { message: 'Select an LM Studio model before sending.', code: 'missing_model' }
+      })
+      return
+    }
 
     const activeMemories = memoriesEnabled ? memories.filter(m => m.active) : []
     let memoryContext = ''
@@ -197,7 +207,6 @@ export function ChatInput() {
       setAutoTuneLastResult(tuneResult)
     }
 
-    const isLocalProvider = inferenceProvider !== 'openrouter'
     const chatMode = isLocalProvider ? 'standard' : (currentConversation?.mode || 'standard')
     const effectiveUltraKey = ultraplinianApiKey || apiKey
 
@@ -550,7 +559,7 @@ export function ChatInput() {
             className="flex-1 px-1 py-3 bg-transparent border-none
               resize-none focus:outline-none
               placeholder:opacity-40 disabled:opacity-40
-              transition-all duration-200 text-sm"
+              transition-all duration-200 text-base"
             style={{ color: 'var(--text)', minHeight: '48px', maxHeight: '200px' }}
           />
 

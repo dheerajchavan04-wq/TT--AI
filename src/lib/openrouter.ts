@@ -9,6 +9,7 @@ import {
   chatCompletionsUrl,
   isOpenRouterBase,
   openaiModelsUrl,
+  normalizeApiV1Base,
   upstreamRequiresApiKey,
 } from '@/lib/upstream'
 
@@ -123,6 +124,35 @@ export async function sendMessage({
     throw new Error('No API key set. Go to Settings → API Key and enter your OpenRouter key from [openrouter.ai/keys](https://openrouter.ai/keys).')
   }
 
+  // Browser + local provider: use Next.js proxy to avoid CORS
+  if (typeof window !== 'undefined' && !isOpenRouterBase(v1Base)) {
+    const res = await fetch('/api/lmstudio/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages,
+        model,
+        apiBaseUrl: v1Base,
+        temperature,
+        max_tokens: maxTokens,
+        top_p,
+        top_k,
+        frequency_penalty,
+        presence_penalty,
+        repetition_penalty,
+        noLog,
+      }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.error || 'LM Studio request failed')
+    }
+    const data = await res.json()
+    const content = data?.choices?.[0]?.message?.content
+    if (!content) throw new Error('No response from model')
+    return content
+  }
+
   // Prepare request body
   const body: Record<string, unknown> = {
     model,
@@ -146,6 +176,8 @@ export async function sendMessage({
     method: 'POST',
     headers: buildUpstreamHeaders(apiKey, v1Base),
     body: JSON.stringify(body),
+    mode: 'cors',
+    credentials: 'omit',
     signal
   })
 
@@ -205,6 +237,8 @@ export async function* streamMessage({
     method: 'POST',
     headers: buildUpstreamHeaders(apiKey, v1Base),
     body: JSON.stringify(streamBody),
+    mode: 'cors',
+    credentials: 'omit',
     signal
   })
 
@@ -254,21 +288,87 @@ export async function* streamMessage({
 /**
  * Get available models from OpenRouter
  */
+const normalizeModelValue = (model: any): string | null => {
+  if (!model) return null
+  // Handle common shapes: OpenRouter (id/model), OpenAI (id), LM Studio (key/display_name), HF style (slug)
+  const candidate = model.id
+    || model.model
+    || model.name
+    || model.slug
+    || model.modelId
+    || model.key
+    || model.display_name
+  if (candidate && typeof candidate === 'string' && candidate.trim()) return candidate.trim()
+  // Fallback: stringify primitives
+  if (typeof model === 'string' && model.trim()) return model.trim()
+  if (typeof model === 'number' || typeof model === 'boolean') return String(model)
+  return null
+}
+
 export async function getModels(apiKey: string, inferenceBaseUrl?: string): Promise<string[]> {
   const v1Base = inferenceBaseUrl ?? OPENROUTER_V1_BASE
   if (upstreamRequiresApiKey(v1Base) && !apiKey) {
     throw new Error('API key required for this provider')
   }
-  const response = await fetch(openaiModelsUrl(v1Base), {
-    headers: buildUpstreamHeaders(apiKey, v1Base),
-  })
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch models')
+  // Browser + local provider: use Next.js proxy to avoid CORS
+  if (typeof window !== 'undefined' && !isOpenRouterBase(v1Base)) {
+    const proxy = `/api/lmstudio/models?base=${encodeURIComponent(v1Base)}`
+    const res = await fetch(proxy, { method: 'GET' })
+    if (!res.ok) throw new Error('Failed to fetch models')
+    const data = await res.json()
+    const raw = (data?.data ?? data?.models) as any
+    const models = Array.isArray(raw) ? raw.map(normalizeModelValue).filter(Boolean) : []
+    if (models.length > 0) return models
+    throw new Error('No models returned')
+  }
+  const tryFetch = async (url: string) => {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: buildUpstreamHeaders(apiKey, v1Base, { includeContentType: false }),
+      mode: 'cors',
+      credentials: 'omit',
+    })
+    if (!res.ok) throw new Error('Failed to fetch models')
+    return res.json()
   }
 
-  const data = await response.json()
-  return data.data.map((model: { id: string }) => model.id)
+  const parseModels = (data: any): string[] | null => {
+    const pools = [
+      data,
+      data?.data,
+      data?.models,
+      data?.data?.models,
+    ].filter(Boolean)
+
+    for (const pool of pools) {
+      if (Array.isArray(pool)) {
+        const models = pool
+          .map((m: any) => normalizeModelValue(m))
+          .filter((v): v is string => !!v)
+        if (models.length > 0) return models
+      }
+    }
+    return null
+  }
+
+  const candidates = [
+    `${normalizeApiV1Base(v1Base).replace(/\/v1$/, '')}/api/v1/models`, // native v1
+    openaiModelsUrl(v1Base),                                           // OpenAI-compatible
+    `${normalizeApiV1Base(v1Base).replace(/\/v1$/, '')}/api/v0/models` // legacy native v0
+  ]
+
+  let lastError: unknown = null
+  for (const url of candidates) {
+    try {
+      const data = await tryFetch(url)
+      const parsed = parseModels(data)
+      if (parsed && parsed.length > 0) return parsed
+    } catch (err) {
+      lastError = err
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error('Failed to fetch models')
 }
 
 /**

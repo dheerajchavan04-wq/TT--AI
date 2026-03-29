@@ -238,7 +238,7 @@ function APIKeyTab() {
                 bumpSaved()
               }
             }}
-            placeholder="http://127.0.0.1:1234/v1"
+            placeholder="http://127.0.0.1:1234/"
             className="w-full px-4 py-3 bg-theme-dim border border-theme-primary rounded-lg focus:outline-none"
           />
         </div>

@@ -83,6 +83,8 @@ body {
   background: var(--bg);
   color: var(--text);
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 /* ═══════════════════════════════════════════
@@ -368,5 +370,21 @@ input[type="range"]::-moz-range-thumb {
   .qa-toolbar-responsive {
     gap: 4px !important;
     padding: 6px 8px !important;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  textarea,
+  input,
+  button {
+    font-size: 1rem;
+  }
+
+  .chat-message-body {
+    font-size: 1rem;
+    line-height: 1.65;
   }
 }

@@ -9,7 +9,7 @@ export type InferenceProvider = 'openrouter' | 'lm_studio' | 'ollama' | 'custom'
 
 const PRESETS: Record<InferenceProvider, string> = {
   openrouter: OPENROUTER_V1_BASE,
-  lm_studio: 'http://127.0.0.1:1234/v1',
+  lm_studio: 'http://127.0.0.1:1234/',
   ollama: 'http://127.0.0.1:11434/v1',
   custom: '',
 }
@@ -48,8 +48,12 @@ export function isOpenRouterBase(v1Base: string): boolean {
 export function buildUpstreamHeaders(
   apiKey: string,
   v1Base: string,
+  opts: { includeContentType?: boolean } = {},
 ): Record<string, string> {
-  const h: Record<string, string> = { 'Content-Type': 'application/json' }
+  const h: Record<string, string> = {}
+  if (opts.includeContentType !== false) {
+    h['Content-Type'] = 'application/json'
+  }
   if (apiKey) h['Authorization'] = `Bearer ${apiKey}`
   if (isOpenRouterBase(v1Base)) {
     h['HTTP-Referer'] = 'https://godmod3.ai'

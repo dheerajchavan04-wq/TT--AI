@@ -169,7 +169,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         </div>
 
         {/* Body */}
-        <div className="prose prose-invert max-w-none text-sm leading-relaxed"
+        <div className="prose prose-invert max-w-none text-sm leading-relaxed chat-message-body"
           style={{ color: 'var(--text)' }}>
           <ReactMarkdown
             components={{

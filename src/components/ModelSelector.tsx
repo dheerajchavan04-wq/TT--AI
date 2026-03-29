@@ -77,6 +77,7 @@ export function ModelSelector() {
   } = useStore()
   const [isOpen, setIsOpen] = useState(false)
   const [localIds, setLocalIds] = useState<string[]>([])
+  const [localError, setLocalError] = useState<string | null>(null)
   const v1 = resolveInferenceBaseUrl(inferenceProvider, inferenceCustomBaseUrl)
   const isCloud = isOpenRouterBase(v1)
 
@@ -85,14 +86,33 @@ export function ModelSelector() {
     try {
       const ids = await getModels(apiKey || '', v1)
       setLocalIds(ids)
-    } catch {
+      setLocalError(null)
+      const current = typeof defaultModel === 'string' ? defaultModel : ''
+      if (ids.length > 0 && (
+        !current.trim() ||
+        current.includes('/') ||
+        !ids.includes(current)
+      )) {
+        setDefaultModel(ids[0])
+      }
+    } catch (err) {
       setLocalIds([])
+      const message = (err instanceof Error && err.message) ? err.message : 'Unable to reach the local server'
+      setLocalError(`LM Studio models unavailable — ${message}`)
     }
-  }, [apiKey, v1, isCloud])
+  }, [apiKey, v1, isCloud, defaultModel, setDefaultModel])
 
   useEffect(() => {
     if (isOpen && !isCloud) loadLocal()
   }, [isOpen, isCloud, loadLocal])
+
+  useEffect(() => {
+    if (!isCloud) {
+      loadLocal()
+    } else {
+      setLocalIds([])
+    }
+  }, [isCloud, loadLocal])
 
   const activeModel = isCloud
     ? (MODELS.find(m => m.id === defaultModel) || MODELS[0])
@@ -106,7 +126,7 @@ export function ModelSelector() {
         </label>
         <input
           type="text"
-          value={defaultModel}
+          value={typeof defaultModel === 'string' ? defaultModel : ''}
           onChange={(e) => setDefaultModel(e.target.value)}
           placeholder="e.g. llama3.2, qwen2.5"
           className="w-full px-3 py-2 text-sm glass-input rounded-xl focus:outline-none"
@@ -130,6 +150,11 @@ export function ModelSelector() {
           <RefreshCw className="w-3 h-3" />
           Refresh model list
         </button>
+        {localError && (
+          <p className="text-[10px] mt-1 leading-relaxed" style={{ color: '#f87171' }}>
+            {localError}
+          </p>
+        )}
       </div>
     )
   }

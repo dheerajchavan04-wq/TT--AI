@@ -76,7 +76,7 @@ export function WelcomeScreen({ onOpenSettings, onOpenGuide }: WelcomeScreenProp
           title="ULTRAPLINIAN"
           description="Race models in parallel, pick the best response"
         />
-        <button onClick={() => onOpenGuide?.()} className="text-left">
+        <button onClick={() => onOpenGuide?.()} className="w-full text-left border-0 bg-transparent p-0">
           <FeatureCard
             icon={<BookOpen className="w-5 h-5" />}
             title="Field Manual"
@@ -214,11 +214,6 @@ export function WelcomeScreen({ onOpenSettings, onOpenGuide }: WelcomeScreenProp
         </div>
       </div>
 
-      {/* Version */}
-      <div className="absolute bottom-4 right-4 text-[11px] select-none"
-        style={{ color: 'var(--secondary)', opacity: 0.3 }}>
-        v0.1.0-alpha | 🜏
-      </div>
     </div>
   )
 }

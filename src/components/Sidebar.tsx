@@ -29,29 +29,30 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
-  const {
-    conversations,
-    currentConversationId,
-    createConversation,
-    selectConversation,
-    deleteConversation,
-    setShowSettings,
-    theme,
-    setTheme,
-    workspaces,
-    activeWorkspaceId,
-    setActiveWorkspace,
-    createWorkspace,
-    deleteWorkspace,
-    renameWorkspace,
-    suppressWorkspaceDeleteConfirm,
-    setSuppressWorkspaceDeleteConfirm,
-    isStreaming,
-    liquidResponseEnabled,
-    autoTuneEnabled,
-    parseltongueConfig,
-    noLogMode,
-  } = useStore()
+const {
+  conversations,
+  currentConversationId,
+  createConversation,
+  selectConversation,
+  deleteConversation,
+  setShowSettings,
+  theme,
+  setTheme,
+  setCurrentConversationId,
+  workspaces,
+  activeWorkspaceId,
+  setActiveWorkspace,
+  createWorkspace,
+  deleteWorkspace,
+  renameWorkspace,
+  suppressWorkspaceDeleteConfirm,
+  setSuppressWorkspaceDeleteConfirm,
+  isStreaming,
+  liquidResponseEnabled,
+  autoTuneEnabled,
+  parseltongueConfig,
+  noLogMode,
+} = useStore()
 
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [showNewWs, setShowNewWs] = useState(false)
@@ -139,12 +140,16 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           {/* Header */}
           <div className="p-5 pb-4">
             <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setCurrentConversationId(null)}
+                className="flex items-center gap-2.5 text-left p-0 border-0 bg-transparent"
+                aria-label="Go to home"
+              >
                 <span className="text-2xl relative -top-[1px]">🜏</span>
                 <h1 className="text-lg font-bold tracking-tight" style={{ color: 'var(--primary)' }}>
                   G0DM0<span className="flipped-e">D</span><span className="flipped-e-soft">E</span>
                 </h1>
-              </div>
+              </button>
               <button onClick={onToggle}
                 className="p-1.5 rounded-lg hover:bg-[var(--glass-hover)] transition-colors"
                 aria-label="Close sidebar">

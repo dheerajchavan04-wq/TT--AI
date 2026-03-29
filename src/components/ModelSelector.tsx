@@ -114,6 +114,8 @@ export function ModelSelector() {
     }
   }, [isCloud, loadLocal])
 
+  const [localMenuOpen, setLocalMenuOpen] = useState(false)
+
   const activeModel = isCloud
     ? (MODELS.find(m => m.id === defaultModel) || MODELS[0])
     : { id: defaultModel, name: defaultModel || '(set model id)', provider: 'Local', description: '', context: 'local' }
@@ -133,16 +135,48 @@ export function ModelSelector() {
           style={{ color: 'var(--text)' }}
         />
         {localIds.length > 0 && (
-          <select
-            value={defaultModel}
-            onChange={(e) => setDefaultModel(e.target.value)}
-            className="w-full px-3 py-2 text-xs glass-input rounded-xl"
-            style={{ color: 'var(--text)' }}
-          >
-            {localIds.map((id) => (
-              <option key={id} value={id}>{id}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setLocalMenuOpen(prev => !prev)}
+              className="w-full flex items-center justify-between px-3 py-2
+                glass rounded-xl transition-all text-sm"
+              style={{ color: 'var(--text)' }}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--primary)' }} />
+                <span className="truncate">{localIds.includes(defaultModel ?? '') ? defaultModel : '(set model id)'}</span>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${localMenuOpen ? 'rotate-180' : ''}`}
+                style={{ color: 'var(--secondary)' }} />
+            </button>
+            {localMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setLocalMenuOpen(false)} />
+                <div className="absolute top-full left-0 right-0 mt-1 z-20
+                  glass-panel rounded-xl shadow-2xl max-h-72 overflow-y-auto"
+                  style={{ background: 'var(--dim)' }}
+                >
+                  {localIds.map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => {
+                        setDefaultModel(id)
+                        setLocalMenuOpen(false)
+                      }}
+                      className={`w-full flex items-start gap-3 px-3 py-2.5 text-left
+                        transition-colors duration-100 hover:bg-[var(--glass-hover)]`}
+                      style={defaultModel === id ? { background: 'var(--accent)' } : {}}
+                    >
+                      <Sparkles className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: 'var(--secondary)' }} />
+                      <span className="flex-1 min-w-0 text-sm" style={{ color: 'var(--text)' }}>{id}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         )}
         <button type="button" onClick={() => loadLocal()}
           className="flex items-center gap-1.5 text-xs transition-opacity hover:opacity-80"

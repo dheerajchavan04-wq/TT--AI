@@ -234,6 +234,7 @@ export interface AppState {
   setSidebarOpen: (open: boolean) => void
   setIsStreaming: (streaming: boolean) => void
   setCurrentPersona: (persona: string) => void
+  setCurrentConversationId: (id: string | null) => void
   setDatasetGenerationEnabled: (enabled: boolean) => void
   setNoLogMode: (enabled: boolean) => void
   setHydrated: () => void
@@ -608,6 +609,7 @@ export const useStore = create<AppState>()(
       },
 
       selectConversation: (id) => set({ currentConversationId: id }),
+      setCurrentConversationId: (currentConversationId) => set({ currentConversationId }),
 
       setConversationMode: (id, mode) => {
         const state = get()

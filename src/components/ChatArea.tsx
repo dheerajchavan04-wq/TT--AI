@@ -203,20 +203,6 @@ export function ChatArea({ sidebarOpen = true, onToggleSidebar, onOpenGuide }: C
             </button>
           )}
           
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center shadow-lg"
-              style={{ 
-                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)'
-              }}>
-              <Bot size={14} className="text-white" />
-            </div>
-            <span className="font-bold text-sm tracking-wide" style={{ color: 'var(--text)', fontFamily: 'monospace' }}>
-              G0DM0D3
-            </span>
-          </div>
-
           {/* Mode switcher button */}
           <button ref={modeBtnRef}
             onClick={() => {
@@ -236,17 +222,6 @@ export function ChatArea({ sidebarOpen = true, onToggleSidebar, onOpenGuide }: C
         </div>
         
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Persona & Model Info */}
-          <div className="hidden md:flex flex-col text-right pr-2 border-r border-[var(--glass-border)]">
-            <p className="text-[11px] font-semibold flex items-center justify-end gap-1" style={{ color: 'var(--text)' }}>
-              <span className="text-base">{persona.emoji}</span> {persona.name}
-            </p>
-            <p className="text-[10px] flex items-center justify-end gap-1 font-mono"
-              style={{ color: 'var(--secondary)' }}>
-              {activeModelLabel}
-            </p>
-          </div>
-
           <div className="flex items-center gap-1.5">
             <button
               ref={providerBtnRef}

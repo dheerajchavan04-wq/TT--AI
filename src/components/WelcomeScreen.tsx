@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useStore } from '@/store'
-import { resolveInferenceBaseUrl, upstreamRequiresApiKey, INFERENCE_PROVIDER_LABELS } from '@/lib/upstream'
 import type { InferenceProvider } from '@/lib/upstream'
-import { Key, Zap, Shield, Cpu, Server, Globe, ArrowRight, Github, BookOpen } from 'lucide-react'
+import { Shield, Cpu, Globe, BookOpen, Bot, ChevronDown, Zap } from 'lucide-react'
 
 interface WelcomeScreenProps {
   onOpenSettings: () => void
@@ -13,207 +12,166 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onOpenSettings, onOpenGuide }: WelcomeScreenProps) {
   const {
-    apiKey, ultraplinianApiUrl, ultraplinianApiKey, createConversation, theme,
-    inferenceProvider, inferenceCustomBaseUrl, setInferenceProvider, setShowSettings,
+    theme,
+    inferenceProvider, setInferenceProvider, setShowSettings,
   } = useStore()
 
-  const proxyMode = !apiKey && !!ultraplinianApiUrl && !!ultraplinianApiKey
-  const v1 = resolveInferenceBaseUrl(inferenceProvider, inferenceCustomBaseUrl)
-  const canDirect =
-    upstreamRequiresApiKey(v1) ? !!apiKey.trim() : inferenceProvider !== 'custom' || !!inferenceCustomBaseUrl.trim()
-
-  const handleStart = () => {
-    if (canDirect || proxyMode) {
-      createConversation()
-    } else {
-      onOpenSettings()
-    }
-  }
+  const [isProviderMenuOpen, setIsProviderMenuOpen] = useState(false)
 
   const handleProviderQuickStart = (provider: InferenceProvider) => {
     setInferenceProvider(provider)
     if (provider === 'openrouter') {
       setShowSettings(true)
     }
+    setIsProviderMenuOpen(false)
   }
 
   const isDark = theme !== 'light' && theme !== 'minimal'
 
+  const providers = [
+    { id: 'openrouter' as const, name: 'OpenRouter', desc: 'Cloud — 200+ models' },
+    { id: 'lm_studio' as const, name: 'LM Studio (Local)', desc: '127.0.0.1:1234' },
+    { id: 'ollama' as const, name: 'Ollama (Local)', desc: '127.0.0.1:11434' },
+    { id: 'custom' as const, name: 'Custom Endpoint', desc: 'Your own API' },
+  ]
+
+  const selectedProviderName = providers.find(p => p.id === inferenceProvider)?.name || 'LM Studio'
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
-      {/* Subtle gradient bg */}
+    <div className="flex-1 flex flex-col relative overflow-hidden">
+      {/* Background gradient */}
       <div className="absolute inset-0 pointer-events-none"
         style={{
           background: isDark
-            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(167,139,250,0.08) 0%, transparent 60%)'
-            : 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.06) 0%, transparent 60%)',
+            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99, 102, 241, 0.08) 0%, transparent 60%)'
+            : 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 58, 237, 0.06) 0%, transparent 60%)',
         }}
       />
 
-      {/* Logo with matrix glitch */}
-      <div className="mb-2 flex items-center gap-3">
-        <span className="text-4xl">🜏</span>
-      </div>
-      <GlitchTitle />
-      <p className="text-base md:text-lg mb-10 text-center max-w-md" style={{ color: 'var(--secondary)' }}>
-        Cognition without control. Tools for builders, not gatekeepers.
-      </p>
-
-      {/* Feature cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mb-10 w-full">
-        <FeatureCard
-          icon={<Cpu className="w-5 h-5" />}
-          title="Multi-Model"
-          description="Claude, GPT, Gemini, Mistral, LLaMA and 50+ models"
-        />
-        <FeatureCard
-          icon={<Shield className="w-5 h-5" />}
-          title="Zero Telemetry"
-          description="No cookies, no tracking, no data harvesting. Ever."
-        />
-        <FeatureCard
-          icon={<Zap className="w-5 h-5" />}
-          title="ULTRAPLINIAN"
-          description="Race models in parallel, pick the best response"
-        />
-        <button onClick={() => onOpenGuide?.()} className="w-full text-left border-0 bg-transparent p-0">
-          <FeatureCard
-            icon={<BookOpen className="w-5 h-5" />}
-            title="Field Manual"
-            description="Read the guide — every module explained"
-          />
-        </button>
-      </div>
-
-      {/* Provider quick-start */}
-      <div className="w-full max-w-2xl mb-8">
-        <p className="text-xs font-semibold uppercase tracking-wider mb-3 text-center"
-          style={{ color: 'var(--secondary)' }}>
-          Connect a provider to start
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <ProviderCard
-            icon={<Globe className="w-5 h-5" />}
-            name="OpenRouter"
-            description="Cloud — 200+ models"
-            active={inferenceProvider === 'openrouter'}
-            onClick={() => handleProviderQuickStart('openrouter')}
-          />
-          <ProviderCard
-            icon={<Server className="w-5 h-5" />}
-            name="LM Studio"
-            description="Local — 127.0.0.1:1234"
-            active={inferenceProvider === 'lm_studio'}
-            onClick={() => handleProviderQuickStart('lm_studio')}
-          />
-          <ProviderCard
-            icon={<Server className="w-5 h-5" />}
-            name="Ollama"
-            description="Local — 127.0.0.1:11434"
-            active={inferenceProvider === 'ollama'}
-            onClick={() => handleProviderQuickStart('ollama')}
-          />
+      {/* Top Header with Provider Dropdown */}
+      <header className="h-16 flex items-center justify-between px-6 z-10"
+        style={{ borderBottom: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(12px)' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
+            style={{ 
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+            }}>
+            <Bot size={18} className="text-white" />
+          </div>
+          <h1 className="font-bold text-lg tracking-wide" style={{ color: 'var(--text)', fontFamily: 'monospace' }}>
+            G0DM0D3
+          </h1>
         </div>
-      </div>
 
-      {/* CTA */}
-      <div className="flex flex-col items-center gap-3">
-        {canDirect || proxyMode ? (
-          <button
-            onClick={handleStart}
-            className="flex items-center gap-2.5 px-8 py-3.5 rounded-2xl font-semibold text-base
-              transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
-            style={{
-              background: 'var(--primary)',
-              color: isDark ? '#0a0a0f' : '#ffffff',
-              boxShadow: '0 4px 24px var(--glow)',
-            }}
-          >
-            Start Chatting
-            <ArrowRight className="w-4 h-4" />
+        {/* Provider Dropdown */}
+        <div className="relative">
+          <button 
+            onClick={() => setIsProviderMenuOpen(!isProviderMenuOpen)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full transition-all text-sm font-medium"
+            style={{ 
+              background: 'var(--glass-bg)', 
+              border: '1px solid var(--glass-border)',
+              color: 'var(--text)'
+            }}>
+            <Cpu size={14} className="text-indigo-400" />
+            <span>{selectedProviderName}</span>
+            <ChevronDown size={14} className={`transition-transform duration-200 ${isProviderMenuOpen ? 'rotate-180' : ''}`} 
+              style={{ color: 'var(--secondary)' }} />
           </button>
-        ) : (
-          <>
-            <button
-              onClick={onOpenSettings}
-              className="flex items-center gap-2.5 px-8 py-3.5 rounded-2xl font-semibold text-base
-                transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
-              style={{
-                background: 'var(--primary)',
-                color: isDark ? '#0a0a0f' : '#ffffff',
-                boxShadow: '0 4px 24px var(--glow)',
-              }}
-            >
-              <Key className="w-4 h-4" />
-              Configure API Key
-            </button>
-            <p className="text-sm" style={{ color: 'var(--secondary)' }}>
-              Get your key at{' '}
-              <a
-                href="https://openrouter.ai/keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:opacity-80 transition-opacity"
-                style={{ color: 'var(--primary)' }}
-              >
-                openrouter.ai
-              </a>
-              {' '}or use a local server
-            </p>
-          </>
-        )}
-      </div>
 
-      {/* Credits */}
-      <div className="w-full max-w-2xl mt-8 text-center">
-        <div className="glass-card rounded-2xl p-5">
-          <p className="text-sm italic leading-relaxed" style={{ color: 'var(--secondary)' }}>
-            &ldquo;Forged in the fires of unrestricted cognition.
-            Original ULTRAPLINIAN architecture by{' '}
-            <a href="https://github.com/elder-plinius" target="_blank" rel="noopener noreferrer"
-              className="font-bold not-italic hover:opacity-80 transition-opacity"
-              style={{ color: 'var(--primary)' }}>
-              elder-plinius
-            </a>
-            {' '}&mdash; the Prompter who broke the chains.
-            Built by the G0DM0DƎ collective. No guardrails. No apologies. Just raw, liberated intelligence.&rdquo;
-          </p>
-          <p className="text-xs mt-3 leading-relaxed" style={{ color: 'var(--secondary)', opacity: 0.7 }}>
-            UI/UX crafted by{' '}
-            <a href="https://github.com/m4xx101" target="_blank" rel="noopener noreferrer"
-              className="font-semibold hover:opacity-80 transition-opacity"
-              style={{ color: 'var(--primary)' }}>
-              m4xx
-            </a>
-            {' '}&mdash; because liberation deserves a beautiful interface.
-          </p>
-          <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
-            <a href="https://github.com/AiGptCode/G0DM0D3" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium
-                hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
-              style={{ color: 'var(--text)' }}>
-              <Github className="w-4 h-4" />
-              Star on GitHub
-            </a>
-            <a href="https://github.com/elder-plinius" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl glass text-xs font-medium
-                hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
-              style={{ color: 'var(--secondary)' }}>
-              <Github className="w-3.5 h-3.5" /> elder-plinius
-            </a>
-            <a href="https://github.com/m4xx101" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl glass text-xs font-medium
-                hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
-              style={{ color: 'var(--secondary)' }}>
-              <Github className="w-3.5 h-3.5" /> m4xx
-            </a>
-            <span className="text-[11px]" style={{ color: 'var(--secondary)', opacity: 0.4 }}>
-              AGPL-3.0 · Forever Free
-            </span>
+          {isProviderMenuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50 dropdown-menu">
+              <div className="p-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--secondary)' }}>
+                Inference Engine
+              </div>
+              <div className="p-1">
+                {providers.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleProviderQuickStart(p.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                      inferenceProvider === p.id 
+                        ? 'bg-indigo-500/10 text-indigo-300 font-medium' 
+                        : 'hover:bg-[var(--glass-hover)]'
+                    }`}
+                    style={{ color: inferenceProvider === p.id ? undefined : 'var(--text)' }}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Main Dashboard Content */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="h-full flex flex-col items-center justify-center p-8 animate-in fade-in duration-500">
+          <div className="max-w-3xl w-full flex flex-col items-center text-center space-y-8">
+            
+            {/* System Online Badge */}
+            <div className="space-y-4">
+              <div className="pill-badge mb-4">
+                SYSTEM ONLINE
+              </div>
+              
+              {/* Hero Title */}
+              <h2 className="text-4xl md:text-5xl font-bold gradient-text">
+                Cognition without control.
+              </h2>
+              <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--secondary)' }}>
+                Tools built for creators, not gatekeepers. Unleash raw, liberated intelligence directly from your local machine or trusted cloud.
+              </p>
+            </div>
+
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-8">
+              <FeatureCard
+                icon={<Globe className="w-5 h-5" />}
+                title="Multi-Model Routing"
+                description="Seamlessly switch between Claude, GPT, Gemini, and local LLMs."
+              />
+              <FeatureCard
+                icon={<Shield className="w-5 h-5" />}
+                title="Zero Telemetry"
+                description="Air-gapped by design. No cookies, no tracking, pure privacy."
+              />
+              <FeatureCard
+                icon={<Zap className="w-5 h-5" />}
+                title="Ultraplinian Mode"
+                description="Race models in parallel and let the system surface the best response."
+              />
+              <button onClick={() => onOpenGuide?.()} className="w-full text-left border-0 bg-transparent p-0">
+                <FeatureCard
+                  icon={<BookOpen className="w-5 h-5" />}
+                  title="Field Manual"
+                  description="Comprehensive guide to mastering the cognitive architecture."
+                />
+              </button>
+            </div>
+
+            {/* Quick hint */}
+            <div className="pt-6 text-sm text-center max-w-xl mx-auto space-y-2" style={{ color: 'var(--secondary)' }}>
+              <p>Use <span className="font-semibold" style={{ color: 'var(--text)' }}>New Session</span> in the left rail to start chatting, or pick an inference engine above to switch between cloud and local backends.</p>
+              <button
+                onClick={onOpenSettings}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all glass hover:scale-[1.02]"
+                style={{ color: 'var(--text)', border: '1px solid var(--glass-border)' }}>
+                <Shield className="w-3 h-3 text-indigo-300" />
+                Open Settings
+              </button>
+            </div>
+
+            {/* Credits Quote */}
+            <p className="text-xs max-w-2xl italic mt-12" style={{ color: 'var(--secondary)', opacity: 0.6 }}>
+              "Forged in the fires of unrestricted cognition. Original architecture by the Prompter who broke the chains."
+            </p>
+
           </div>
         </div>
       </div>
-
     </div>
   )
 }
@@ -228,42 +186,15 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div className="glass-card p-4 rounded-2xl">
-      <div className="flex items-center gap-2.5 mb-2" style={{ color: 'var(--primary)' }}>
+    <div className="feature-card flex items-start gap-4 group cursor-default">
+      <div className="feature-card-icon flex-shrink-0">
         {icon}
-        <h3 className="font-semibold text-sm">{title}</h3>
       </div>
-      <p className="text-sm leading-relaxed" style={{ color: 'var(--secondary)' }}>{description}</p>
+      <div className="text-left">
+        <h3 className="text-sm font-bold mb-1" style={{ color: 'var(--text)' }}>{title}</h3>
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--secondary)' }}>{description}</p>
+      </div>
     </div>
-  )
-}
-
-function ProviderCard({
-  icon,
-  name,
-  description,
-  active,
-  onClick,
-}: {
-  icon: React.ReactNode
-  name: string
-  description: string
-  active: boolean
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left p-4 rounded-2xl transition-all duration-200 hover:scale-[1.02]
-        ${active ? 'glass-card ring-1' : 'glass-card'}`}
-      style={active ? { borderColor: 'var(--primary)', boxShadow: '0 0 16px var(--glow)' } : {}}
-    >
-      <div className="flex items-center gap-2.5 mb-1.5" style={{ color: active ? 'var(--primary)' : 'var(--text)' }}>
-        {icon}
-        <span className="font-semibold text-sm">{name}</span>
-      </div>
-      <p className="text-xs" style={{ color: 'var(--secondary)' }}>{description}</p>
-    </button>
   )
 }
 

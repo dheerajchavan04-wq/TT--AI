@@ -62,31 +62,36 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('api')
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-md"
+        className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl glass-panel rounded-3xl md:rounded-3xl overflow-hidden settings-modal-responsive"
-        style={{ background: 'var(--dim)', boxShadow: 'var(--shadow)', maxHeight: '85vh' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4"
-          style={{ borderBottom: '1px solid var(--glass-border)' }}>
-          <h2 className="text-base md:text-lg font-bold" style={{ color: 'var(--text)' }}>Settings</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl hover:bg-[var(--glass-hover)] transition-colors"
-            aria-label="Close settings"
-          >
-            <X className="w-5 h-5" style={{ color: 'var(--secondary)' }} />
-          </button>
-        </div>
+      {/* Modal Container */}
+      <div className="relative w-full max-w-5xl overflow-hidden settings-modal-responsive flex flex-col md:flex-row animate-in zoom-in-95 duration-200"
+        style={{ 
+          background: 'var(--bg-secondary)', 
+          boxShadow: 'var(--shadow-lg)', 
+          maxHeight: '85vh',
+          borderRadius: '24px',
+          border: '1px solid var(--glass-border)'
+        }}>
+        
+        {/* Close Button Mobile (Absolute) */}
+        <button onClick={onClose} className="md:hidden absolute top-4 right-4 p-2 rounded-full z-10 hover:bg-[var(--glass-hover)] transition-colors"
+          style={{ background: 'rgba(0,0,0,0.2)', color: 'var(--secondary)' }}>
+          <X size={20} />
+        </button>
 
-        <div className="flex flex-col md:flex-row" style={{ minHeight: '400px', maxHeight: 'calc(85vh - 56px)' }}>
-          {/* Nav */}
-          <nav className="w-full md:w-56 p-2 md:p-3 overflow-y-auto md:overflow-y-auto overflow-x-auto flex-shrink-0 settings-nav-responsive"
-            style={{ borderRight: '1px solid var(--glass-border)' }}>
+        {/* Settings Sidebar */}
+        <div className="w-full md:w-64 flex flex-col flex-shrink-0 settings-nav-responsive"
+          style={{ background: 'rgba(0,0,0,0.3)', borderRight: '1px solid var(--glass-border)' }}>
+          <div className="p-6 pb-2">
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Settings</h2>
+          </div>
+          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
             <NavSection label="General">
               <TabButton icon={<Key className="w-4 h-4" />} label="Provider & API" active={activeTab === 'api'} onClick={() => setActiveTab('api')} />
               <TabButton icon={<Palette className="w-4 h-4" />} label="Appearance" active={activeTab === 'appearance'} onClick={() => setActiveTab('appearance')} />
@@ -111,22 +116,51 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               <TabButton icon={<Download className="w-4 h-4" />} label="Import / Export" active={activeTab === 'data'} onClick={() => setActiveTab('data')} />
             </NavSection>
           </nav>
+        </div>
 
-          {/* Content */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            {activeTab === 'api' && <APIKeyTab />}
-            {activeTab === 'prompt' && <SystemPromptTab />}
-            {activeTab === 'autotune' && <AutoTuneTab />}
-            {activeTab === 'appearance' && <AppearanceTab />}
-            {activeTab === 'privacy' && <PrivacyTab />}
-            {activeTab === 'parseltongue' && <ParseltongueTab />}
-            {activeTab === 'liquid' && <LiquidTab />}
-            {activeTab === 'stm' && <STMTab />}
-            {activeTab === 'memory' && <MemoryTab />}
-            {activeTab === 'ultraplinian' && <UltraplinianTab />}
-            {activeTab === 'consortium' && <ConsortiumTab />}
-            {activeTab === 'plan' && <PlanTab />}
-            {activeTab === 'data' && <DataTab />}
+        {/* Settings Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
+          {/* Header */}
+          <div className="h-16 flex items-center justify-between px-8"
+            style={{ borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.01)' }}>
+            <h3 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
+              {activeTab === 'api' ? 'Provider & API' : 
+               activeTab === 'appearance' ? 'Appearance' :
+               activeTab === 'prompt' ? 'System Prompt' :
+               activeTab === 'autotune' ? 'AutoTune' :
+               activeTab === 'liquid' ? 'Liquid Response' :
+               activeTab === 'ultraplinian' ? 'ULTRAPLINIAN' :
+               activeTab === 'consortium' ? 'CONSORTIUM' :
+               activeTab === 'parseltongue' ? 'Parseltongue' :
+               activeTab === 'stm' ? 'STM Modules' :
+               activeTab === 'memory' ? 'Memory' :
+               activeTab === 'plan' ? 'Plan' :
+               activeTab === 'privacy' ? 'Privacy' :
+               activeTab === 'data' ? 'Import / Export' : ''}
+            </h3>
+            <button onClick={onClose} className="hidden md:flex p-2 rounded-full hover:bg-[var(--glass-hover)] transition-colors"
+              style={{ color: 'var(--secondary)' }}>
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+              {activeTab === 'api' && <APIKeyTab />}
+              {activeTab === 'prompt' && <SystemPromptTab />}
+              {activeTab === 'autotune' && <AutoTuneTab />}
+              {activeTab === 'appearance' && <AppearanceTab />}
+              {activeTab === 'privacy' && <PrivacyTab />}
+              {activeTab === 'parseltongue' && <ParseltongueTab />}
+              {activeTab === 'liquid' && <LiquidTab />}
+              {activeTab === 'stm' && <STMTab />}
+              {activeTab === 'memory' && <MemoryTab />}
+              {activeTab === 'ultraplinian' && <UltraplinianTab />}
+              {activeTab === 'consortium' && <ConsortiumTab />}
+              {activeTab === 'plan' && <PlanTab />}
+              {activeTab === 'data' && <DataTab />}
+            </div>
           </div>
         </div>
       </div>

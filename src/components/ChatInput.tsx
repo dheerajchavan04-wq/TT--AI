@@ -440,11 +440,11 @@ export function ChatInput() {
   const activeMemoryCount = memoriesEnabled ? memories.filter(m => m.active).length : 0
 
   return (
-    <div className="p-4 glass-panel" style={{ borderTop: '1px solid var(--glass-border)' }}>
-      <div className="max-w-4xl mx-auto">
+    <div className="p-4 md:p-6 relative" style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}>
+      <div className="max-w-3xl mx-auto space-y-2">
         {/* AutoTune details panel */}
         {autoTuneEnabled && displayResult && showTuneDetails && (
-          <div className="mb-3 p-3 rounded-xl glass space-y-3">
+          <div className="mb-3 p-3 rounded-2xl space-y-3" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--glass-border)' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: 'var(--primary)' }}>
                 <SlidersHorizontal className="w-3 h-3" />
@@ -533,60 +533,66 @@ export function ChatInput() {
           </div>
         )}
 
-        {/* Composer — unified bar */}
-        <div className="flex items-end gap-0 glass-input rounded-2xl overflow-hidden"
-          style={{ border: '1px solid var(--glass-border)' }}>
-          {/* Attach */}
-          <button onClick={() => fileInputRef.current?.click()}
-            disabled={(!canUseDirect && !proxyMode) || isStreaming}
-            className="flex-shrink-0 p-3 transition-all duration-200
-              hover:bg-[var(--glass-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
-            title="Attach image (vision models)"
-            style={{ color: 'var(--secondary)' }}>
-            <Paperclip className="w-4 h-4" />
-          </button>
-          <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} className="hidden" />
-
-          {/* Textarea */}
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={(canUseDirect || proxyMode) ? "Message G0DM0DƎ... (Shift+Enter for new line)" : "Set your API key in Settings first"}
-            disabled={(!canUseDirect && !proxyMode) || isStreaming}
-            rows={1}
-            className="flex-1 px-1 py-3 bg-transparent border-none
-              resize-none focus:outline-none
-              placeholder:opacity-40 disabled:opacity-40
-              transition-all duration-200 text-base"
-            style={{ color: 'var(--text)', minHeight: '48px', maxHeight: '200px' }}
+        {/* Composer — floating bar */}
+        <div className="relative">
+          <div className="absolute inset-0 blur-xl opacity-60 pointer-events-none"
+            style={{ background: 'radial-gradient(circle at 30% 40%, rgba(124,58,237,0.18), transparent 45%), radial-gradient(circle at 80% 70%, rgba(6,182,212,0.18), transparent 40%)' }}
           />
+          <div className="flex items-end gap-0 glass-input rounded-2xl overflow-hidden relative shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300
+            transition-all hover:-translate-y-0.5"
+            style={{ border: '1px solid var(--glass-border)', backdropFilter: 'blur(14px)' }}>
+            {/* Attach */}
+            <button onClick={() => fileInputRef.current?.click()}
+              disabled={(!canUseDirect && !proxyMode) || isStreaming}
+              className="flex-shrink-0 p-3 transition-all duration-200
+                hover:bg-[var(--glass-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
+              title="Attach image (vision models)"
+              style={{ color: 'var(--secondary)' }}>
+              <Paperclip className="w-4 h-4" />
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} className="hidden" />
 
-          {/* Send / Stop */}
-          {isStreaming ? (
-            <button onClick={handleStop}
-              className="flex-shrink-0 p-3 transition-all duration-200 hover:bg-red-500/10"
-              aria-label="Stop generation">
-              <StopCircle className="w-5 h-5 text-red-400" />
-            </button>
-          ) : (
-            <button onClick={handleSubmit}
-              disabled={!input.trim() || (!canUseDirect && !proxyMode)}
-              className="flex-shrink-0 p-3 m-1.5 rounded-xl transition-all duration-200
-                disabled:opacity-30 disabled:cursor-not-allowed"
-              style={{
-                background: 'var(--primary)',
-                color: 'var(--bg)',
-              }}
-              aria-label="Send message">
-              <Send className="w-4 h-4" />
-            </button>
-          )}
+            {/* Textarea */}
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={(canUseDirect || proxyMode) ? "Message G0DM0DƎ... (Shift+Enter for new line)" : "Set your API key in Settings first"}
+              disabled={(!canUseDirect && !proxyMode) || isStreaming}
+              rows={1}
+              className="flex-1 px-1 py-3 bg-transparent border-none
+                resize-none focus:outline-none
+                placeholder:opacity-40 disabled:opacity-40
+                transition-all duration-200 text-base"
+              style={{ color: 'var(--text)', minHeight: '48px', maxHeight: '200px' }}
+            />
+
+            {/* Send / Stop */}
+            {isStreaming ? (
+              <button onClick={handleStop}
+                className="flex-shrink-0 p-3 transition-all duration-200 hover:bg-red-500/10"
+                aria-label="Stop generation">
+                <StopCircle className="w-5 h-5 text-red-400" />
+              </button>
+            ) : (
+              <button onClick={handleSubmit}
+                disabled={!input.trim() || (!canUseDirect && !proxyMode)}
+                className="flex-shrink-0 p-3 m-1.5 rounded-xl transition-all duration-200
+                  disabled:opacity-30 disabled:cursor-not-allowed"
+                style={{
+                  background: 'var(--primary)',
+                  color: 'var(--bg)',
+                }}
+                aria-label="Send message">
+                <Send className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between mt-2.5 text-[11px]" style={{ color: 'var(--secondary)' }}>
+        <div className="flex items-center justify-between mt-3 text-[11px] px-1" style={{ color: 'var(--secondary)' }}>
           <div className="flex items-center gap-3">
             {autoTuneEnabled && (
               <button

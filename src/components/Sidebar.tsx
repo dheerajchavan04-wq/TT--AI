@@ -19,6 +19,7 @@ import {
   X,
   Check,
   Inbox,
+  Bot,
 } from 'lucide-react'
 import { PersonaSelector } from './PersonaSelector'
 import { ModelSelector } from './ModelSelector'
@@ -134,19 +135,28 @@ const {
 
   return (
     <>
-      <aside className={`fixed md:relative z-40 h-screen glass-panel transition-all duration-300
-        ease-[cubic-bezier(0.22,1,0.36,1)] ${isOpen ? 'w-72' : 'w-0'} overflow-hidden`}>
+      <aside className={`fixed md:relative z-40 h-screen transition-all duration-300
+        ease-[cubic-bezier(0.22,1,0.36,1)] ${isOpen ? 'w-72' : 'w-0'} overflow-hidden`}
+        style={{ background: 'var(--bg-secondary)', borderRight: '1px solid var(--glass-border)' }}>
         <div className="flex flex-col h-full w-72">
           {/* Header */}
-          <div className="p-5 pb-4">
-            <div className="flex items-center justify-between mb-5">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => setCurrentConversationId(null)}
-                className="flex items-center gap-2.5 text-left p-0 border-0 bg-transparent"
+                className="flex items-center gap-2.5 text-left p-0 border-0 bg-transparent group"
                 aria-label="Go to home"
               >
-                <span className="text-2xl relative -top-[1px]">🜏</span>
-                <h1 className="text-lg font-bold tracking-tight" style={{ color: 'var(--primary)' }}>
+                {/* Gradient Logo Icon */}
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+                  }}>
+                  <Bot size={18} className="text-white" />
+                </div>
+                <h1 className="text-lg font-bold tracking-tight" 
+                  style={{ color: 'var(--text)', fontFamily: 'monospace' }}>
                   G0DM0<span className="flipped-e">D</span><span className="flipped-e-soft">E</span>
                 </h1>
               </button>
@@ -156,16 +166,22 @@ const {
                 <ChevronLeft className="w-4 h-4" style={{ color: 'var(--secondary)' }} />
               </button>
             </div>
+            
+            {/* New Session Button with Glow */}
             <button onClick={() => createConversation()}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-sm
-                transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: 'var(--primary)', color: isDark ? '#0a0a0f' : '#ffffff' }}>
-              <Plus className="w-4 h-4" /> New Chat
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-sm
+                transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] btn-glow-indigo"
+              style={{ 
+                background: 'linear-gradient(135deg, #6366f1 0%, #7c3aed 100%)',
+                color: '#ffffff',
+              }}>
+              <Plus className="w-4 h-4" /> 
+              <span>New Session</span>
             </button>
           </div>
 
           {/* Model & Persona */}
-          <div className="px-5 pb-3 space-y-3" style={{ borderBottom: '1px solid var(--glass-border)' }}>
+          <div className="px-4 pb-3 space-y-3" style={{ borderBottom: '1px solid var(--glass-border)' }}>
             <ModelSelector />
             <PersonaSelector />
             {/* Status strip */}
@@ -188,7 +204,7 @@ const {
           </div>
 
           {/* Workspace tabs */}
-          <div className="px-3 pt-3 pb-1 flex items-center gap-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <div className="px-3 pt-3 pb-1 flex items-center gap-1 overflow-x-auto custom-scrollbar" style={{ scrollbarWidth: 'none' }}>
             <button onClick={() => switchWorkspace(null)}
               className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap
                 transition-all duration-150 ${!activeWorkspaceId ? 'glass' : 'opacity-50 hover:opacity-80'}`}
@@ -238,8 +254,15 @@ const {
             </div>
           )}
 
+          {/* Recent Activity Label */}
+          <div className="px-4 pt-3 pb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--secondary)', opacity: 0.6 }}>
+              Recent Activity
+            </span>
+          </div>
+
           {/* Conversations */}
-          <div className="flex-1 overflow-y-auto px-3 py-2">
+          <div className="flex-1 overflow-y-auto px-3 py-2 custom-scrollbar">
             {filteredConvs.length === 0 ? (
               <div className="text-center py-10 px-4">
                 <MessageSquare className="w-8 h-8 mx-auto mb-3 opacity-20" style={{ color: 'var(--secondary)' }} />
@@ -251,24 +274,30 @@ const {
                 </p>
               </div>
             ) : (
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {filteredConvs.map(conv => (
                   <div key={conv.id}
-                    className={`group flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer
+                    className={`group flex flex-col items-start px-3 py-2.5 rounded-xl cursor-pointer
                       transition-all duration-150
                       ${currentConversationId === conv.id ? 'glass-card' : 'hover:bg-[var(--glass-hover)]'}`}
                     onClick={() => !isStreaming && selectConversation(conv.id)}
                     onMouseEnter={() => setHoveredId(conv.id)}
                     onMouseLeave={() => setHoveredId(null)}>
-                    <MessageSquare className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--secondary)' }} />
-                    <span className="flex-1 truncate text-sm" style={{ color: 'var(--text)' }}>{conv.title}</span>
-                    {hoveredId === conv.id && (
-                      <button onClick={e => { e.stopPropagation(); deleteConversation(conv.id) }}
-                        className="p-1 rounded-md hover:bg-red-500/10 transition-colors"
-                        aria-label="Delete conversation">
-                        <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2.5 w-full">
+                      <MessageSquare className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--secondary)' }} />
+                      <span className="flex-1 truncate text-sm font-medium group-hover:text-indigo-300 transition-colors" 
+                        style={{ color: 'var(--text)' }}>{conv.title}</span>
+                      {hoveredId === conv.id && (
+                        <button onClick={e => { e.stopPropagation(); deleteConversation(conv.id) }}
+                          className="p-1 rounded-md hover:bg-red-500/10 transition-colors"
+                          aria-label="Delete conversation">
+                          <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                        </button>
+                      )}
+                    </div>
+                    <span className="text-xs mt-0.5 pl-6" style={{ color: 'var(--secondary)', opacity: 0.6 }}>
+                      {conv.messages.length} messages
+                    </span>
                   </div>
                 ))}
               </div>
@@ -276,7 +305,7 @@ const {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t" style={{ borderColor: 'var(--glass-border)' }}>
+          <div className="p-4 mt-auto" style={{ borderTop: '1px solid var(--glass-border)' }}>
             <div className="flex items-center gap-2">
               <button onClick={toggleTheme}
                 className="p-2.5 rounded-xl glass transition-all duration-200 hover:scale-105"
@@ -286,15 +315,17 @@ const {
               </button>
               <button onClick={() => setShowSettings(true)}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl glass text-sm font-medium
-                  transition-all duration-200 hover:scale-[1.01]"
+                  transition-all duration-200 hover:scale-[1.01] hover:bg-[var(--glass-hover)]"
                 style={{ color: 'var(--text)' }}>
-                <Settings className="w-4 h-4" style={{ color: 'var(--secondary)' }} /> Settings
+                <Settings className="w-4 h-4" style={{ color: 'var(--secondary)' }} /> Preferences
               </button>
             </div>
-            <div className="mt-3 text-center">
-              <p className="text-[11px] font-medium" style={{ color: 'var(--secondary)', opacity: 0.5 }}>
-                AGPL-3.0 | Cognition without control
-              </p>
+            <div className="mt-4 px-3 flex justify-between items-center text-xs" style={{ color: 'var(--secondary)', opacity: 0.5 }}>
+              <span>v2.4.1 • Godmode</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-green-500" style={{ boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)' }}></span>
+                Online
+              </span>
             </div>
           </div>
         </div>
@@ -302,8 +333,8 @@ const {
 
       {/* Workspace right-click context menu */}
       {ctxMenu && (
-        <div ref={ctxRef} className="fixed z-[100] glass-panel rounded-xl shadow-2xl py-1 min-w-[140px]"
-          style={{ left: ctxMenu.x, top: ctxMenu.y, background: 'var(--dim)' }}>
+        <div ref={ctxRef} className="fixed z-[100] rounded-xl shadow-2xl py-1 min-w-[140px] dropdown-menu animate-in fade-in slide-in-from-top duration-200"
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}>
           <button onClick={() => {
             const ws = workspaces.find(w => w.id === ctxMenu.id)
             if (ws) { setEditingWsId(ws.id); setEditWsName(ws.name); switchWorkspace(ws.id) }
@@ -322,8 +353,9 @@ const {
       {/* Delete workspace confirmation */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirmId(null)} />
-          <div className="relative glass-panel rounded-2xl p-6 max-w-sm w-full" style={{ background: 'var(--dim)' }}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirmId(null)} />
+          <div className="relative rounded-2xl p-6 max-w-sm w-full animate-in zoom-in-95 duration-200"
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}>
             <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--text)' }}>Delete Workspace?</h3>
             <p className="text-sm mb-4" style={{ color: 'var(--secondary)' }}>
               Conversations will be moved to "All", not deleted.

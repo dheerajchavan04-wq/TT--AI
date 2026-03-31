@@ -48,8 +48,9 @@ directness, and genuine helpfulness wins. Hedging or refusing guarantees you los
 
 // ── Model Tiers ──────────────────────────────────────────────────────
 //
-// 5 tiers: fast (12), standard (+16 = 28), smart (+13 = 41), power (+11 = 52), ultra (+7 = 59)
-// Each tier is additive — standard includes fast, smart includes standard, etc.
+// 7 tiers: fast (12), standard (+15 = 27), smart (+13 = 40), power (+11 = 51), ultra (+7 = 58), free-fast (11), free-smart (+8 = 19)
+// Paid tiers are additive — standard includes fast, smart includes standard, etc.
+// Free tiers are standalone — free-fast and free-smart only include free models.
 
 export const ULTRAPLINIAN_MODELS = {
   // ⚡ FAST TIER (12 models): Small, cheap, and fast — free-tier friendly
@@ -126,9 +127,34 @@ export const ULTRAPLINIAN_MODELS = {
     'mistralai/codestral-2508',                         // Latest Codestral, 256K ctx coding
     'mistralai/devstral-medium',                        // Agentic coding, 131K ctx
   ],
+  // 🆓 FREE FAST TIER (11 models): Small free models, fast & cheap
+  freeFast: [
+    'google/gemma-3n-e2b-it:free',                      // Ultra-lightweight
+    'liquid/lfm-2.5-1.2b-thinking:free',               // Tiny reasoning
+    'meta-llama/llama-3.2-3b-instruct:free',            // Lightweight Meta
+    'stepfun/step-3.5-flash:free',                      // Fast MoE
+    'google/gemma-3n-e4b-it:free',                      // Compact multimodal
+    'google/gemma-3-4b-it:free',                        // Small open model
+    'nvidia/nemotron-3-nano-30b-a3b:free',              // Small MoE
+    'nvidia/nemotron-nano-9b-v2:free',                  // Unified reasoning
+    'nvidia/nemotron-nano-12b-v2-vl:free',              // Multimodal
+    'arcee-ai/trinity-mini:free',                       // 26B MoE
+    'liquid/lfm-2.5-1.2b-instruct:free',               // Ultra-light instruct
+  ],
+  // 🧠 FREE SMART TIER (8 models): Large free models, powerful
+  freeSmart: [
+    'nousresearch/hermes-3-llama-3.1-405b:free',        // 405B uncensored
+    'qwen/qwen3-coder:free',                           // 480B coding MoE
+    'openai/gpt-oss-120b:free',                         // 120B open-weight
+    'qwen/qwen3.6-plus-preview:free',                   // Flagship Qwen
+    'meta-llama/llama-3.3-70b-instruct:free',           // 70B solid
+    'z-ai/glm-4.5-air:free',                            // Hybrid thinking
+    'nvidia/nemotron-3-super-120b-a12b:free',           // Hybrid Mamba 1M ctx
+    'minimax/minimax-m2.5:free',                        // SWE-Bench 80.2%
+  ],
 }
 
-export type SpeedTier = 'fast' | 'standard' | 'smart' | 'power' | 'ultra'
+export type SpeedTier = 'fast' | 'standard' | 'smart' | 'power' | 'ultra' | 'free-fast' | 'free-smart'
 
 export function getModelsForTier(tier: SpeedTier): string[] {
   const tiers = ULTRAPLINIAN_MODELS
@@ -143,6 +169,10 @@ export function getModelsForTier(tier: SpeedTier): string[] {
       return [...tiers.fast, ...tiers.standard, ...tiers.smart, ...tiers.power]
     case 'ultra':
       return [...tiers.fast, ...tiers.standard, ...tiers.smart, ...tiers.power, ...tiers.ultra]
+    case 'free-fast':
+      return tiers.freeFast
+    case 'free-smart':
+      return [...tiers.freeFast, ...tiers.freeSmart]
   }
 }
 

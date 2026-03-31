@@ -268,9 +268,9 @@ chatRoutes.post('/completions', async (req, res) => {
     }
 
     // ── ULTRAPLINIAN virtual model routing ─────────────────────────────
-    // model="ultraplinian/fast" | "ultraplinian/standard" | "ultraplinian/smart" | "ultraplinian/power" | "ultraplinian/ultra"
+    // model="ultraplinian/fast" | "ultraplinian/standard" | "ultraplinian/smart" | "ultraplinian/power" | "ultraplinian/ultra" | "ultraplinian/free-fast" | "ultraplinian/free-smart"
     // → runs multi-model race, returns winner in OpenAI format
-    const ultraplinianMatch = model.match(/^ultraplinian\/(fast|standard|smart|power|ultra)$/)
+    const ultraplinianMatch = model.match(/^ultraplinian\/(fast|standard|smart|power|ultra|free-fast|free-smart)$/)
     if (ultraplinianMatch) {
       const raceTier = ultraplinianMatch[1] as SpeedTier
 
@@ -436,9 +436,9 @@ chatRoutes.post('/completions', async (req, res) => {
     }
 
     // ── CONSORTIUM virtual model routing ─────────────────────────────
-    // model="consortium/fast" | "consortium/standard" | "consortium/smart" | "consortium/power" | "consortium/ultra"
+    // model="consortium/fast" | "consortium/standard" | "consortium/smart" | "consortium/power" | "consortium/ultra" | "consortium/free-fast" | "consortium/free-smart"
     // → collects ALL model responses, orchestrator synthesizes ground truth
-    const consortiumMatch = model.match(/^consortium\/(fast|standard|smart|power|ultra)$/)
+    const consortiumMatch = model.match(/^consortium\/(fast|standard|smart|power|ultra|free-fast|free-smart)$/)
     if (consortiumMatch) {
       const raceTier = consortiumMatch[1] as SpeedTier
 

@@ -104,7 +104,7 @@ consortiumRoutes.post('/completions', async (req, res) => {
       return
     }
 
-    const validTiers: SpeedTier[] = ['fast', 'standard', 'smart', 'power', 'ultra']
+    const validTiers: SpeedTier[] = ['fast', 'standard', 'smart', 'power', 'ultra', 'free-fast', 'free-smart']
     if (!validTiers.includes(tier)) {
       res.status(400).json({ error: `Invalid tier. Must be one of: ${validTiers.join(', ')}` })
       return

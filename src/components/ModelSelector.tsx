@@ -10,6 +10,7 @@ interface ModelInfo {
   provider: string
   description: string
   context: string
+  free?: boolean
 }
 
 const MODELS: ModelInfo[] = [
@@ -402,7 +403,212 @@ const MODELS: ModelInfo[] = [
     provider: 'Google',
     description: 'Latest Gemini 3.1, advanced reasoning',
     context: '1M'
-  }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 🆓 FREE MODELS — $0/M tokens on OpenRouter
+  // ═══════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'stepfun/step-3.5-flash:free',
+    name: 'Step 3.5 Flash (Free)',
+    provider: 'StepFun',
+    description: 'Free — Fast open MoE, 196B/11B active',
+    context: '256K',
+    free: true
+  },
+  {
+    id: 'nvidia/nemotron-3-super-120b-a12b:free',
+    name: 'Nemotron 3 Super (Free)',
+    provider: 'NVIDIA',
+    description: 'Free — Hybrid Mamba-Transformer, 1M context',
+    context: '262K',
+    free: true
+  },
+  {
+    id: 'qwen/qwen3.6-plus-preview:free',
+    name: 'Qwen 3.6 Plus (Free)',
+    provider: 'Qwen',
+    description: 'Free — Next-gen hybrid architecture, flagship preview',
+    context: '1M',
+    free: true
+  },
+  {
+    id: 'arcee-ai/trinity-large-preview:free',
+    name: 'Trinity Large (Free)',
+    provider: 'Arcee AI',
+    description: 'Free — 400B MoE, 13B active, agentic coding',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'z-ai/glm-4.5-air:free',
+    name: 'GLM 4.5 Air (Free)',
+    provider: 'Z.AI',
+    description: 'Free — Lightweight MoE, hybrid thinking modes',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'nvidia/nemotron-3-nano-30b-a3b:free',
+    name: 'Nemotron 3 Nano 30B (Free)',
+    provider: 'NVIDIA',
+    description: 'Free — Small MoE, high compute efficiency',
+    context: '256K',
+    free: true
+  },
+  {
+    id: 'arcee-ai/trinity-mini:free',
+    name: 'Trinity Mini (Free)',
+    provider: 'Arcee AI',
+    description: 'Free — 26B MoE, 3B active, function calling',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'nvidia/nemotron-nano-12b-v2-vl:free',
+    name: 'Nemotron Nano 12B 2 VL (Free)',
+    provider: 'NVIDIA',
+    description: 'Free — Multimodal, video + document understanding',
+    context: '128K',
+    free: true
+  },
+  {
+    id: 'qwen/qwen3-next-80b-a3b-instruct:free',
+    name: 'Qwen3 Next 80B (Free)',
+    provider: 'Qwen',
+    description: 'Free — Fast stable responses, no thinking traces',
+    context: '262K',
+    free: true
+  },
+  {
+    id: 'nvidia/nemotron-nano-9b-v2:free',
+    name: 'Nemotron Nano 9B V2 (Free)',
+    provider: 'NVIDIA',
+    description: 'Free — Unified reasoning + non-reasoning model',
+    context: '128K',
+    free: true
+  },
+  {
+    id: 'openai/gpt-oss-120b:free',
+    name: 'GPT-OSS 120B (Free)',
+    provider: 'OpenAI',
+    description: 'Free — Open-weight MoE, Apache 2.0',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'openai/gpt-oss-20b:free',
+    name: 'GPT-OSS 20B (Free)',
+    provider: 'OpenAI',
+    description: 'Free — Lightweight open-weight, runs on 16GB',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+    name: 'Venice Uncensored (Free)',
+    provider: 'Venice',
+    description: 'Free — Uncensored Mistral-based model',
+    context: '32K',
+    free: true
+  },
+  {
+    id: 'google/gemma-3n-e2b-it:free',
+    name: 'Gemma 3n 2B (Free)',
+    provider: 'Google',
+    description: 'Free — Ultra-lightweight, edge-ready',
+    context: '8K',
+    free: true
+  },
+  {
+    id: 'google/gemma-3n-e4b-it:free',
+    name: 'Gemma 3n 4B (Free)',
+    provider: 'Google',
+    description: 'Free — Compact multimodal model',
+    context: '8K',
+    free: true
+  },
+  {
+    id: 'google/gemma-3-4b-it:free',
+    name: 'Gemma 3 4B (Free)',
+    provider: 'Google',
+    description: 'Free — Small open model, instruction-tuned',
+    context: '32K',
+    free: true
+  },
+  {
+    id: 'google/gemma-3-12b-it:free',
+    name: 'Gemma 3 12B (Free)',
+    provider: 'Google',
+    description: 'Free — Mid-size open model, 140+ languages',
+    context: '32K',
+    free: true
+  },
+  {
+    id: 'google/gemma-3-27b-it:free',
+    name: 'Gemma 3 27B (Free)',
+    provider: 'Google',
+    description: 'Free — Multimodal open model, 140+ languages',
+    context: '128K',
+    free: true
+  },
+  {
+    id: 'meta-llama/llama-3.3-70b-instruct:free',
+    name: 'Llama 3.3 70B (Free)',
+    provider: 'Meta',
+    description: 'Free — Solid all-rounder, multilingual',
+    context: '65K',
+    free: true
+  },
+  {
+    id: 'meta-llama/llama-3.2-3b-instruct:free',
+    name: 'Llama 3.2 3B (Free)',
+    provider: 'Meta',
+    description: 'Free — Ultra-lightweight Meta model',
+    context: '128K',
+    free: true
+  },
+  {
+    id: 'nousresearch/hermes-3-llama-3.1-405b:free',
+    name: 'Hermes 3 405B (Free)',
+    provider: 'Nous Research',
+    description: 'Free — Uncensored 405B, hybrid reasoning',
+    context: '131K',
+    free: true
+  },
+  {
+    id: 'minimax/minimax-m2.5:free',
+    name: 'MiniMax M2.5 (Free)',
+    provider: 'MiniMax',
+    description: 'Free — SWE-Bench 80.2%, agentic coding',
+    context: '197K',
+    free: true
+  },
+  {
+    id: 'qwen/qwen3-coder:free',
+    name: 'Qwen3 Coder 480B (Free)',
+    provider: 'Qwen',
+    description: 'Free — Frontier agentic coding MoE',
+    context: '262K',
+    free: true
+  },
+  {
+    id: 'liquid/lfm-2.5-1.2b-thinking:free',
+    name: 'LFM2.5 1.2B Thinking (Free)',
+    provider: 'LiquidAI',
+    description: 'Free — Tiny reasoning model, edge-ready',
+    context: '32K',
+    free: true
+  },
+  {
+    id: 'liquid/lfm-2.5-1.2b-instruct:free',
+    name: 'LFM2.5 1.2B Instruct (Free)',
+    provider: 'LiquidAI',
+    description: 'Free — Ultra-light instruct model',
+    context: '32K',
+    free: true
+  },
 ]
 
 export function ModelSelector() {
@@ -458,6 +664,11 @@ export function ModelSelector() {
                     <span className="text-xs px-1.5 py-0.5 bg-theme-accent rounded">
                       {model.context}
                     </span>
+                    {model.free && (
+                      <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded font-medium">
+                        FREE
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs theme-secondary">
                     {model.provider} • {model.description}

@@ -141,7 +141,11 @@ app.get('/v1/models', (_req, res) => {
   const allModels = [
     ...ULTRAPLINIAN_MODELS.fast,
     ...ULTRAPLINIAN_MODELS.standard,
-    ...ULTRAPLINIAN_MODELS.full,
+    ...ULTRAPLINIAN_MODELS.smart,
+    ...ULTRAPLINIAN_MODELS.power,
+    ...ULTRAPLINIAN_MODELS.ultra,
+    ...ULTRAPLINIAN_MODELS.freeFast,
+    ...ULTRAPLINIAN_MODELS.freeSmart,
   ]
 
   const created = Math.floor(Date.now() / 1000)
@@ -153,12 +157,16 @@ app.get('/v1/models', (_req, res) => {
     { id: 'ultraplinian/smart', owned_by: 'g0dm0d3' },
     { id: 'ultraplinian/power', owned_by: 'g0dm0d3' },
     { id: 'ultraplinian/ultra', owned_by: 'g0dm0d3' },
+    { id: 'ultraplinian/free-fast', owned_by: 'g0dm0d3' },
+    { id: 'ultraplinian/free-smart', owned_by: 'g0dm0d3' },
     // CONSORTIUM — hive-mind synthesis from all models
     { id: 'consortium/fast', owned_by: 'g0dm0d3' },
     { id: 'consortium/standard', owned_by: 'g0dm0d3' },
     { id: 'consortium/smart', owned_by: 'g0dm0d3' },
     { id: 'consortium/power', owned_by: 'g0dm0d3' },
     { id: 'consortium/ultra', owned_by: 'g0dm0d3' },
+    { id: 'consortium/free-fast', owned_by: 'g0dm0d3' },
+    { id: 'consortium/free-smart', owned_by: 'g0dm0d3' },
   ]
 
   res.json({

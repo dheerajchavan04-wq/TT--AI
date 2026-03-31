@@ -16,20 +16,21 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copy package files and install deps
+# Copy package files and install ALL deps (including devDeps for tsx)
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
+RUN npm ci
 
 # Copy source (api + engine libs)
 COPY api/ ./api/
 COPY src/lib/ ./src/lib/
 COPY src/stm/ ./src/stm/
 
-# Create non-root user for security
-RUN addgroup --system app && adduser --system --ingroup app app
+# Create non-root user for security (with a real home dir)
+RUN addgroup --system app && adduser --system --ingroup app --home /home/app app
 
 # HF Spaces expects port 7860
 ENV PORT=7860
+ENV HOME=/home/app
 EXPOSE 7860
 
 # Switch to non-root user
@@ -39,4 +40,5 @@ USER app
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
   CMD curl -f http://localhost:7860/v1/health || exit 1
 
-CMD ["npx", "tsx", "api/server.ts"]
+# Use the locally installed tsx binary (no npx/download needed)
+CMD ["node_modules/.bin/tsx", "api/server.ts"]

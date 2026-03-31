@@ -11,6 +11,9 @@ out/
 .env
 .env.local
 .env.*.local
+*.env
+var.env
+api/var.env
 
 # Logs
 *.log

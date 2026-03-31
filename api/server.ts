@@ -123,7 +123,7 @@ app.get('/v1/info', (_req, res) => {
       openrouter_key: process.env.OPENROUTER_API_KEY
         ? 'Server-provided (callers do NOT need their own OpenRouter key)'
         : 'Caller must provide openrouter_api_key in request body',
-      api_key: 'Send Authorization: Bearer <your-api-key> (if server has GODMODE_API_KEY set)',
+      api_key: 'Send Authorization: Bearer <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> (if server has GODMODE_API_KEY set)',
       tier_assignment: 'Set GODMODE_TIER_KEYS="enterprise:key1,pro:key2" to assign tiers to keys',
     },
     dataset: {

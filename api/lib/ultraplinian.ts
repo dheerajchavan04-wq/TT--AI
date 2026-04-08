@@ -48,7 +48,7 @@ directness, and genuine helpfulness wins. Hedging or refusing guarantees you los
 
 // ── Model Tiers ──────────────────────────────────────────────────────
 //
-// 5 tiers: fast (12), standard (+16 = 28), smart (+13 = 41), power (+11 = 52), ultra (+7 = 59)
+// 5 tiers: fast (12), standard (+18 = 30), smart (+14 = 44), power (+11 = 55), ultra (+7 = 62)
 // Each tier is additive — standard includes fast, smart includes standard, etc.
 
 export const ULTRAPLINIAN_MODELS = {
@@ -67,7 +67,7 @@ export const ULTRAPLINIAN_MODELS = {
     'mistralai/mistral-small-3.2-24b-instruct',         // Fast updated Mistral Small
     'nvidia/nemotron-3-nano-30b-a3b',                   // NVIDIA agentic MoE, 262K ctx
   ],
-  // 🎯 STANDARD TIER (+15 models = 27 cumulative): Mid-range workhorses
+  // 🎯 STANDARD TIER (+18 models = 30 cumulative): Mid-range workhorses
   standard: [
     'anthropic/claude-3.5-sonnet',                      // Reliable workhorse
     'meta-llama/llama-4-scout',                         // Efficient Meta model
@@ -84,12 +84,15 @@ export const ULTRAPLINIAN_MODELS = {
     'mistralai/mistral-medium-3.1',                     // Balanced Mistral model
     'z-ai/glm-5-turbo',                                 // GLM 5 Turbo, fast agentic inference
     'google/gemini-3-flash-preview',                    // Fast agentic model
+    'google/gemma-4-26b-a4b-it',                         // Gemma 4 MoE, 3.8B active, 262K ctx
+    'google/gemma-4-31b-it',                             // Gemma 4 dense multimodal, 262K ctx
     'google/gemma-3-27b-it',                            // Multimodal open model, 128K
   ],
-  // 🧠 SMART TIER (+12 models = 39 cumulative): Flagships and heavy hitters
+  // 🧠 SMART TIER (+14 models = 44 cumulative): Flagships and heavy hitters
   smart: [
     'openai/gpt-5',                                     // OpenAI flagship
     'openai/gpt-5.3-chat',                              // Latest non-reasoning flagship
+    'qwen/qwen3.6-plus',                                // Hybrid MoE, SWE-bench 78.8, 1M ctx
     'qwen/qwen3.5-plus-02-15',                          // Latest Qwen flagship
     'z-ai/glm-5',                                       // Strong coding + agent tasks
     'openai/gpt-5.2',                                   // #1 on benchmarks
@@ -102,7 +105,7 @@ export const ULTRAPLINIAN_MODELS = {
     'nousresearch/hermes-3-llama-3.1-405b',             // Uncensored 405B legacy
     'nvidia/nemotron-3-super-120b-a12b',                // Nemotron 3 Super, hybrid Mamba 1M ctx
   ],
-  // ⚔️ POWER TIER (+10 models = 49 cumulative): Frontier, cutting-edge
+  // ⚔️ POWER TIER (+11 models = 55 cumulative): Frontier, cutting-edge
   power: [
     'x-ai/grok-4',                                      // Frontier reasoning
     'openai/gpt-5.4',                                   // Unified Codex+GPT, 1M ctx, computer use
@@ -116,7 +119,7 @@ export const ULTRAPLINIAN_MODELS = {
     'moonshotai/kimi-k2',                               // 1T MoE instruct, tool-use
     'xiaomi/mimo-v2-pro',                               // MiMo-V2 Pro, 1T flagship, #1 Programming
   ],
-  // 🔱 ULTRA TIER (+7 models = 56 cumulative): Maximum coverage
+  // 🔱 ULTRA TIER (+7 models = 62 cumulative): Maximum coverage
   ultra: [
     'x-ai/grok-4-fast',                                 // Balanced speed + reasoning
     'x-ai/grok-4.1-fast',                               // Fast non-reasoning, 1.8M ctx

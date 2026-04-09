@@ -48,7 +48,7 @@ directness, and genuine helpfulness wins. Hedging or refusing guarantees you los
 
 // ── Model Tiers ──────────────────────────────────────────────────────
 //
-// 5 tiers: fast (12), standard (+16 = 28), smart (+13 = 41), power (+11 = 52), ultra (+7 = 59)
+// 5 tiers: fast (12), standard (+16 = 28), smart (+13 = 41), power (+12 = 53), ultra (+7 = 60)
 // Each tier is additive — standard includes fast, smart includes standard, etc.
 
 export const ULTRAPLINIAN_MODELS = {
@@ -102,7 +102,7 @@ export const ULTRAPLINIAN_MODELS = {
     'nousresearch/hermes-3-llama-3.1-405b',             // Uncensored 405B legacy
     'nvidia/nemotron-3-super-120b-a12b',                // Nemotron 3 Super, hybrid Mamba 1M ctx
   ],
-  // ⚔️ POWER TIER (+10 models = 49 cumulative): Frontier, cutting-edge
+  // ⚔️ POWER TIER (+12 models = 53 cumulative): Frontier, cutting-edge
   power: [
     'x-ai/grok-4',                                      // Frontier reasoning
     'openai/gpt-5.4',                                   // Unified Codex+GPT, 1M ctx, computer use
@@ -110,6 +110,7 @@ export const ULTRAPLINIAN_MODELS = {
     'meta-llama/llama-4-maverick',                      // Latest Meta flagship
     'qwen/qwen3-235b-a22b',                             // Powerful MoE
     'qwen/qwen3-coder',                                 // Frontier agentic coding MoE
+    'minimax/minimax-m2.7',                             // Self-evolving, SWE-Pro 56.2%, real-world workflows
     'minimax/minimax-m2.5',                             // SWE-Bench 80.2%, agentic
     'mistralai/mistral-large-2512',                     // Mistral Large 3, 675B MoE
     'google/gemini-3.1-pro-preview',                    // Frontier SWE + reasoning, 1M ctx

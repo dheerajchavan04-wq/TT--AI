@@ -335,6 +335,13 @@ const MODELS: ModelInfo[] = [
   },
   // ── MiniMax ──
   {
+    id: 'minimax/minimax-m2.7',
+    name: 'MiniMax M2.7',
+    provider: 'MiniMax',
+    description: 'Self-evolving, SWE-Pro 56.2%, agentic workflows',
+    context: '204K'
+  },
+  {
     id: 'minimax/minimax-m2.5',
     name: 'MiniMax M2.5',
     provider: 'MiniMax',
